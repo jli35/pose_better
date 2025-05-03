@@ -21,11 +21,9 @@ def draw_landmarks_on_image(rgb_image, detection_result, draw_angles=False):
             solutions.drawing_styles.get_default_pose_landmarks_style()
         )
         if draw_angles:
-            joint_angles = extract_joint_angles(detection_result)  # Pass the list of landmarks
+            joint_angles = extract_joint_angles(detection_result)
 
-            # Annotate the angles on the image
             for joint, angle in joint_angles.items():
-                # Select the anchor point for each joint angle
                 if joint == 'left_elbow':
                     anchor = pose_landmarks[13]  # left elbow
                 elif joint == 'right_elbow':
@@ -42,7 +40,6 @@ def draw_landmarks_on_image(rgb_image, detection_result, draw_angles=False):
                 x = int(anchor.x * w)
                 y = int(anchor.y * h)
                 
-                # Annotate the angle near the joint
                 text = f"{joint}: {np.degrees(angle):.2f}°"
                 cv2.putText(annotated_image, text, (x, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)

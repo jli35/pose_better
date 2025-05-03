@@ -10,7 +10,6 @@ def run_image(landmarker):
     mp_image = mp.Image.create_from_file(IMAGE_PATH)
     result = landmarker.detect(mp_image)
     
-    # Ensure we have pose landmarks
     if result.pose_landmarks:
         annotated_image = draw_landmarks_on_image(mp_image.numpy_view(), result, True)
         resized_image = resize_to_screen(annotated_image)

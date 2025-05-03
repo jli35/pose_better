@@ -1,21 +1,20 @@
+import os
 import cv2
 import mediapipe as mp
 from mediapipe.tasks.python.vision import PoseLandmarker
 from .drawing import draw_landmarks_on_image
 from .utils import resize_to_screen
 
-def run_camera(landmarker: PoseLandmarker):
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Error: Cannot open webcam")
-        return
+VIDEO_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'samples', 'golfSwingVid.mp4')
+
+def run_video(landmarker: PoseLandmarker):
+    cap = cv2.VideoCapture(VIDEO_PATH)
 
     frame_count = 0
-    while True:
+    while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
-            print("Ignoring empty camera frame.")
-            continue
+            break
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)

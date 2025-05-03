@@ -1,8 +1,10 @@
 import numpy as np
+import cv2
 from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
+from .feature_extraction import extract_joint_angles
 
-def draw_landmarks_on_image(rgb_image, detection_result):
+def draw_landmarks_on_image(rgb_image, detection_result, draw_angles=False):
     pose_landmarks_list = detection_result.pose_landmarks
     annotated_image = np.copy(rgb_image)
 
@@ -18,4 +20,30 @@ def draw_landmarks_on_image(rgb_image, detection_result):
             solutions.pose.POSE_CONNECTIONS,
             solutions.drawing_styles.get_default_pose_landmarks_style()
         )
+        if draw_angles:
+            joint_angles = extract_joint_angles(detection_result)  # Pass the list of landmarks
+
+            # Annotate the angles on the image
+            for joint, angle in joint_angles.items():
+                # Select the anchor point for each joint angle
+                if joint == 'left_elbow':
+                    anchor = pose_landmarks[13]  # left elbow
+                elif joint == 'right_elbow':
+                    anchor = pose_landmarks[14]  # right elbow
+                elif joint == 'left_knee':
+                    anchor = pose_landmarks[25]  # left knee
+                elif joint == 'right_knee':
+                    anchor = pose_landmarks[26]  # right knee
+                else:
+                    continue  # Skip joints not in the list
+                
+                # Convert normalized coordinates to pixel coordinates
+                h, w = rgb_image.shape[:2]
+                x = int(anchor.x * w)
+                y = int(anchor.y * h)
+                
+                # Annotate the angle near the joint
+                text = f"{joint}: {np.degrees(angle):.2f}°"
+                cv2.putText(annotated_image, text, (x, y - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     return annotated_image

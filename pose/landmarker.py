@@ -5,9 +5,9 @@ from mediapipe.tasks.python.vision import PoseLandmarker, PoseLandmarkerOptions,
 MODEL_DIR = os.path.join(os.path.dirname(__file__), '..', 'models')
 model_path = os.path.join(MODEL_DIR, 'pose_landmarker_heavy.task')
 
-def create_pose_landmarker():
+def create_pose_landmarker(mode='VIDEO'):
     options = PoseLandmarkerOptions(
         base_options=python.BaseOptions(model_asset_path=model_path),
-        running_mode=RunningMode.VIDEO
+        running_mode=getattr(RunningMode, mode.upper())
     )
     return PoseLandmarker.create_from_options(options)
